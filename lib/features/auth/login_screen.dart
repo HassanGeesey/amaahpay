@@ -26,19 +26,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } on AuthException catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error.message),
-            backgroundColor: AppColors.error,
-          ),
+          SnackBar(content: Text(error.message), backgroundColor: AppColors.neutral900),
         );
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Unexpected error occurred'),
-            backgroundColor: AppColors.error,
-          ),
+          const SnackBar(content: Text('Unexpected error occurred'), backgroundColor: AppColors.neutral900),
         );
       }
     } finally {
@@ -56,28 +50,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Account created! Check your email to verify.'),
-            backgroundColor: AppColors.success,
-          ),
+          const SnackBar(content: Text('Account created! Check your email to verify.'), backgroundColor: AppColors.neutral900),
         );
       }
     } on AuthException catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error.message),
-            backgroundColor: AppColors.error,
-          ),
+          SnackBar(content: Text(error.message), backgroundColor: AppColors.neutral900),
         );
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Unexpected error occurred'),
-            backgroundColor: AppColors.error,
-          ),
+          const SnackBar(content: Text('Unexpected error occurred'), backgroundColor: AppColors.neutral900),
         );
       }
     } finally {
@@ -94,35 +79,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.pureWhite,
+      backgroundColor: C.bg(isDark),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(AppSpacing.xxl, 0, AppSpacing.xxl, MediaQuery.of(context).padding.bottom + AppSpacing.xl),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Spacer(flex: 2),
-                    _buildLogo(),
-                    const SizedBox(height: AppSpacing.huge),
-                    _buildTitle(context),
-                    const SizedBox(height: AppSpacing.sm),
-                    _buildSubtitle(context),
-                    const SizedBox(height: AppSpacing.xxxl),
-                    _buildForm(context),
-                    const Spacer(flex: 3),
-                    _buildFooter(context),
-                    const SizedBox(height: AppSpacing.xl),
-                  ],
-                ),
-              ),
-            ),
-          ],
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(20, 0, 20, MediaQuery.of(context).padding.bottom + 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 60),
+              _buildLogo(),
+              const SizedBox(height: 48),
+              _buildTitle(),
+              const SizedBox(height: 8),
+              _buildSubtitle(isDark),
+              const SizedBox(height: 32),
+              _buildForm(isDark),
+              const SizedBox(height: 40),
+              _buildFooter(isDark),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -132,94 +113,47 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Container(
       width: 72,
       height: 72,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: AppColors.orangeGradient,
-        ),
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryOrange.withAlpha(77),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: const Icon(
-        Icons.storefront_rounded,
-        size: 36,
-        color: AppColors.pureWhite,
-      ),
+      decoration: D.darkCard,
+      child: const Icon(Icons.storefront_rounded, size: 36, color: C.textInverse),
     );
   }
 
-  Widget _buildTitle(BuildContext context) {
-    return Text(
-      'AmaahPay',
-      style: Theme.of(context).textTheme.displaySmall?.copyWith(
-            fontWeight: FontWeight.w600,
-            letterSpacing: -1,
-          ),
-    );
+  Widget _buildTitle() {
+    return Text('AmaahPay', style: T.sectionHeader.copyWith(fontSize: 28, fontWeight: FontWeight.w700));
   }
 
-  Widget _buildSubtitle(BuildContext context) {
-    return Text(
-      'Manage your shop with elegance',
-      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: AppColors.mutedText,
-          ),
-    );
+  Widget _buildSubtitle(bool isDark) {
+    return Text('Manage your shop with elegance', style: T.body.copyWith(color: C.muted(isDark)));
   }
 
-  Widget _buildForm(BuildContext context) {
+  Widget _buildForm(bool isDark) {
     return Container(
-      decoration: BoxDecoration(
-        color: AppColors.cardWhite,
-        borderRadius: BorderRadius.circular(AppRadius.xxl),
-        border: Border.all(color: AppColors.divider),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryDark.withAlpha(13),
-            blurRadius: 24,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      decoration: D.card(isDark: isDark),
       child: Column(
         children: [
-          _buildEmailField(),
-          Container(height: 1, color: AppColors.divider, margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg)),
-          _buildPasswordField(),
+          _buildEmailField(isDark),
+          Container(height: 1, color: C.bdr(isDark), margin: const EdgeInsets.symmetric(horizontal: 16)),
+          _buildPasswordField(isDark),
         ],
       ),
     );
   }
 
-  Widget _buildEmailField() {
+  Widget _buildEmailField(bool isDark) {
     return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          const Icon(
-            Icons.email_outlined,
-            color: AppColors.mutedText,
-            size: 22,
-          ),
-          const SizedBox(width: AppSpacing.md),
+          Icon(Icons.email_outlined, color: C.muted(isDark), size: 22),
+          const SizedBox(width: 12),
           Expanded(
             child: TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColors.darkText,
-              ),
-              decoration: const InputDecoration(
+              style: T.body.copyWith(color: C.txt(isDark)),
+              decoration: InputDecoration(
                 hintText: 'Email address',
+                hintStyle: T.body.copyWith(color: C.muted(isDark)),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
@@ -234,28 +168,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildPasswordField() {
+  Widget _buildPasswordField(bool isDark) {
     return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          const Icon(
-            Icons.lock_outline,
-            color: AppColors.mutedText,
-            size: 22,
-          ),
-          const SizedBox(width: AppSpacing.md),
+          Icon(Icons.lock_outline, color: C.muted(isDark), size: 22),
+          const SizedBox(width: 12),
           Expanded(
             child: TextFormField(
               controller: _passwordController,
               obscureText: _obscurePassword,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColors.darkText,
-              ),
-              decoration: const InputDecoration(
+              style: T.body.copyWith(color: C.txt(isDark)),
+              decoration: InputDecoration(
                 hintText: 'Password',
+                hintStyle: T.body.copyWith(color: C.muted(isDark)),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
@@ -267,69 +194,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           GestureDetector(
             onTap: () => setState(() => _obscurePassword = !_obscurePassword),
-            child: Icon(
-              _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-              color: AppColors.mutedText,
-              size: 22,
-            ),
+            child: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: C.textSecondary, size: 22),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFooter(BuildContext context) {
+  Widget _buildFooter(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _isLoading
             ? Container(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: AppColors.orangeGradient),
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryOrange.withAlpha(77),
-                      blurRadius: 16,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: AppColors.pureWhite,
-                    ),
-                  ),
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: D.darkCard,
+                child: const Center(child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: C.textInverse))),
               )
             : _buildSignInButton(),
-        const SizedBox(height: AppSpacing.lg),
+        const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "Don't have an account?",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.mutedText,
-                  ),
-            ),
+            Text("Don't have an account?", style: T.body.copyWith(color: C.textSecondary)),
             GestureDetector(
               onTap: _signUp,
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.sm),
-                child: Text(
-                  ' Sign up',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.primaryOrange,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-              ),
+              child: Padding(padding: const EdgeInsets.all(8), child: Text(' Sign up', style: T.body.copyWith(fontWeight: FontWeight.w600, color: C.accent))),
             ),
           ],
         ),
@@ -341,29 +231,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return GestureDetector(
       onTap: _signIn,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: AppColors.orangeGradient),
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primaryOrange.withAlpha(77),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            'Sign In',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.pureWhite,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: D.darkCard,
+        child: Center(child: Text('Sign In', style: T.body.copyWith(fontWeight: FontWeight.w600, color: C.textInverse))),
       ),
     );
   }
