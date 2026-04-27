@@ -87,8 +87,20 @@ lib/
    - `UserRole.merchant` → `/merchant/*` routes (with billing status check)
 
 3. **Dual-Currency Display:**
-   - Use `DualCurrencyText(usd: 10, sos: 27000)` widget (to be implemented)
+   - Use `DualCurrencyText(usd: 10, sos: 27000)` widget in `lib/shared/widgets/dual_currency_text.dart`
    - Format: `$10.00 / 27,000 SOS` with SOS visually de-emphasized
+
+4. **Billing Lifecycle (Admin-Merchant):**
+   - Admin creates user → account starts **disabled**
+   - Admin activates after payment confirmation, sets billing cycle (monthly/yearly) and price
+   - App warns user 3 days before expiry; red banner during grace period (last 3 days)
+   - Account **auto-deactivates** at cycle end; admin reactivates after next payment
+
+5. **Credit/Deposit Sales Logic:**
+   - Customer deposits with outstanding credit → amount first deducts credit, remainder goes to deposit
+   - Customer uses credit with deposit funds → amount first deducts deposit, remainder becomes credit
+
+6. **Password Reset:** Users cannot self-reset. Flow: user contacts admin → admin creates new password.
 
 ## Design System
 
@@ -105,7 +117,14 @@ Typography via GoogleFonts: Outfit (headings), Inter (body).
 - Models use `fromJson`/`toJson` for serialization
 - DateTime fields parsed with `DateTime.parse()`
 - Numeric fields cast with `(json['field'] as num?)?.toDouble() ?? 0.0`
-- See `data/models/user_model.dart` and `customer_model.dart` for examples
+- See `lib/data/models/user_model.dart` and `lib/data/models/customer_model.dart` for examples
+
+## Key Screens & UI Patterns
+
+- **Merchant Dashboard:** Bottom nav (Home, Customers, Sales, Settings). Customer list shows avatar (initials), name, phone, credit (red) and deposit (green).
+- **Sales Flow:** Cart with sliding bottom sheet for payment breakdown popup.
+- **Modals:** `AlertDialog` for alerts (deactivation warnings), `showModalBottomSheet` for forms (add product/customer on fly).
+- **Admin Dashboard:** Bottom nav (Users, Reports, Settings). User cards with active/disabled badges (gray = disabled, green = active).
 
 ## Testing
 

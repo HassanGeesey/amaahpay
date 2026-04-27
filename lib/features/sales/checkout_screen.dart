@@ -74,9 +74,9 @@ class CheckoutScreen extends ConsumerWidget {
             children: [
               Container(width: 80, height: 80, decoration: D.soft(isDark: isDark), child: Icon(Icons.shopping_cart_outlined, size: 36, color: C.sub(isDark))),
               SizedBox(height: S.lg),
-              Text('No items in cart', style: T.sectionHeader),
+              Text('No items in cart', style: T.sectionHeader.copyWith(color: C.txt(isDark))),
               SizedBox(height: S.xs),
-              Text('Tap + to add products', style: T.caption),
+              Text('Tap + to add products', style: T.caption.copyWith(color: C.muted(isDark))),
             ],
           ),
         ),
@@ -100,16 +100,16 @@ class CheckoutScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.product.name, style: T.body),
-                    Text('${item.quantity} ${item.product.unit} @ \$${item.overridePriceUsd.toStringAsFixed(2)}', style: T.caption),
+                    Text(item.product.name, style: T.body.copyWith(color: C.txt(isDark))),
+                    Text('${item.quantity} ${item.product.unit} @ \$${item.overridePriceUsd.toStringAsFixed(2)}', style: T.caption.copyWith(color: C.muted(isDark))),
                   ],
                 ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('\$${item.total.toStringAsFixed(2)}', style: T.body.copyWith(fontWeight: FontWeight.w600)),
-                  Text('${(item.total * 2700).toStringAsFixed(0)} SOS', style: T.caption),
+                  Text('\$${item.total.toStringAsFixed(2)}', style: T.body.copyWith(fontWeight: FontWeight.w600, color: C.txt(isDark))),
+                  Text('${(item.total * 2700).toStringAsFixed(0)} SOS', style: T.caption.copyWith(color: C.muted(isDark))),
                 ],
               ),
               SizedBox(width: S.sm),
@@ -131,8 +131,8 @@ class CheckoutScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Total', style: T.label),
-              Text('\$${cartState.grandTotal.toStringAsFixed(2)}', style: T.sectionHeader),
+              Text('Total', style: T.label.copyWith(color: C.muted(isDark))),
+              Text('\$${cartState.grandTotal.toStringAsFixed(2)}', style: T.sectionHeader.copyWith(color: C.txt(isDark))),
             ],
           ),
           SizedBox(height: S.md),
@@ -143,8 +143,8 @@ class CheckoutScreen extends ConsumerWidget {
                   decoration: D.soft(isDark: isDark),
                   child: TextField(
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    style: T.body,
-                    decoration: InputDecoration(hintText: 'Cash received', hintStyle: T.body.copyWith(color: C.sub(isDark)), border: InputBorder.none, prefixText: '\$ ', prefixStyle: T.body, contentPadding: const EdgeInsets.symmetric(horizontal: S.lg, vertical: S.md)),
+                    style: T.body.copyWith(color: C.txt(isDark)),
+                    decoration: InputDecoration(hintText: 'Cash received', hintStyle: T.body.copyWith(color: C.muted(isDark)), border: InputBorder.none, prefixText: '\$ ', prefixStyle: T.body.copyWith(color: C.txt(isDark)), contentPadding: const EdgeInsets.symmetric(horizontal: S.lg, vertical: S.md)),
                     onChanged: (val) => ref.read(cartProvider.notifier).setCashPaid(double.tryParse(val) ?? 0.0),
                   ),
                 ),

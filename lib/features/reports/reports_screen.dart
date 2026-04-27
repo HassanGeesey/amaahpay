@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_theme.dart';
-import '../../shared/widgets/dual_currency_text.dart';
+import '../../core/services/pdf_service.dart';
 import '../../data/models/sale_model.dart';
 import './providers/reports_provider.dart';
 
@@ -39,6 +40,8 @@ class ReportsScreen extends ConsumerWidget {
             ),
             SizedBox(height: S.md),
             _buildFilters(context, ref, state, isDark),
+            SizedBox(height: S.lg),
+            if (state.sales.isNotEmpty) _buildDownloadButton(context, state, isDark),
             SizedBox(height: S.lg),
             _buildTransactionList(context, state, isDark),
           ],
@@ -135,6 +138,83 @@ class ReportsScreen extends ConsumerWidget {
         }).toList(),
       ),
     );
+  }
+
+  Widget _buildDownloadButton(BuildContext context, ReportsState state, bool isDark) {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () => _downloadPdf(context, state.sales, 'All Sales'),
+            icon: const Icon(Icons.picture_as_pdf, size: 18),
+            label: const Text('Download PDF'),
+          ),
+        ),
+        SizedBox(width: S.md),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () => _downloadCustomerStatements(context, state.sales),
+            icon: const Icon(Icons.people, size: 18),
+            label: const Text('Per Customer'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _downloadPdf(BuildContext context, List<SaleModel> sales, String title) async {
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Generating PDF...'), backgroundColor: C.primaryNavy),
+      );
+      
+      final file = await PdfService.generateSalesReportPdf(
+        sales: sales,
+        title: title,
+      );
+      
+      await Share.shareXFiles([XFile(file.path)], text: 'AmaahPay Sales Report');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed: $e'), backgroundColor: C.error),
+      );
+    }
+  }
+
+  Future<void> _downloadCustomerStatements(BuildContext context, List<SaleModel> allSales) async {
+    final customerSales = <String, List<SaleModel>>{};
+    
+    for (final sale in allSales) {
+      customerSales.putIfAbsent(sale.customerId, () => []).add(sale);
+    }
+
+    if (customerSales.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No customers found'), backgroundColor: C.primaryNavy),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Generating ${customerSales.length} reports...'), backgroundColor: C.primaryNavy),
+    );
+
+    final files = <XFile>[];
+    for (final entry in customerSales.entries) {
+      final customerName = entry.value.first.customerName;
+      final sales = entry.value;
+      
+      final file = await PdfService.generateSalesReportPdf(
+        sales: sales,
+        title: 'Sales - $customerName',
+        customerName: customerName,
+      );
+      files.add(XFile(file.path));
+    }
+
+    if (files.isNotEmpty) {
+      await Share.shareXFiles(files, text: 'AmaahPay Customer Statements');
+    }
   }
 
   Widget _buildTransactionList(BuildContext context, ReportsState state, bool isDark) {

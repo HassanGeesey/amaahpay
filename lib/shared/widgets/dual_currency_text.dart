@@ -22,16 +22,17 @@ class DualCurrencyText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     if (!showBoth) {
-      return Text(_formatUsd(usd), style: (large ? T.sectionHeader : T.body).copyWith(fontWeight: FontWeight.w700, color: C.accent));
+      return Text(_formatUsd(usd), style: (large ? T.sectionHeader : T.body).copyWith(fontWeight: FontWeight.w700, color: C.accentColor(isDark)));
     }
 
     return Column(
       crossAxisAlignment: alignment,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(_formatUsd(usd), style: large ? T.sectionHeader.copyWith(color: C.accent) : T.body.copyWith(fontWeight: FontWeight.w700, color: C.accent)),
-        Text(_formatSos(sos), style: T.caption),
+        Text(_formatUsd(usd), style: large ? T.sectionHeader.copyWith(color: C.accentColor(isDark)) : T.body.copyWith(fontWeight: FontWeight.w700, color: C.accentColor(isDark))),
+        Text(_formatSos(sos), style: T.caption.copyWith(color: C.muted(isDark))),
       ],
     );
   }
